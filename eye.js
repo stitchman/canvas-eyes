@@ -2,14 +2,32 @@ export class Eye {
   constructor(x, y) {
     this.x = x;
     this.y = y;
-    this.radius = Math.random() * 70 + 30;
+    this.radius = Math.random() * 100 + 20;
     this.rw = this.radius;
-    this.rh = this.radius;
+    this.rh = 0;
 
     this.originX = this.x;
     this.originY = this.y;
 
-    this.blinkSpeed = 10;
+    this.total = 60;
+    this.gap = 1 / this.total;
+    this.originPos = [];
+    this.pos = [];
+
+    for (let i = 0; i < this.total; i++) {
+      const pos = this.getEllipsePoint(this.radius, this.radius, this.gap * i);
+      pos.x += (Math.random() * this.radius) / 50;
+      pos.y += (Math.random() * this.radius) / 50;
+      this.originPos[i] = pos;
+    }
+
+    for (let i = 0; i < this.total; i++) {
+      const pos = this.getEllipsePoint(this.rw, this.rh, this.gap * i);
+      this.pos[i] = pos;
+    }
+
+    this.blinkSpeed = 13;
+    this.originBlinkSpeed = this.blinkSpeed;
 
     this.irisX = this.x;
     this.irisY = this.y;
@@ -77,22 +95,41 @@ export class Eye {
   blink() {
     if (this.rh < 1 + this.blinkSpeed && this.blinkSpeed > 0) {
       this.blinkSpeed *= -1;
-    } else if (this.rh === this.radius && this.blinkSpeed <= 0) {
+    } else if (this.rh >= this.radius && this.blinkSpeed <= 0) {
       const randInt = Math.random() * 100;
-      randInt < 0.3 ? (this.blinkSpeed = 10) : (this.blinkSpeed = 0);
+      if (randInt < 0.3) {
+        this.blinkSpeed = this.originBlinkSpeed;
+      } else {
+        this.pos.forEach((pos, i) => {
+          pos.x = this.originPos[i].x;
+          pos.y = this.originPos[i].y;
+        });
+      }
     } else {
       this.rh -= this.blinkSpeed;
+      for (let i = 0; i < this.total; i++) {
+        const pos = this.getEllipsePoint(this.rw, this.rh, this.gap * i);
+        this.pos[i] = pos;
+      }
     }
   }
 
   draw(ctx, mousePos) {
     this.blink();
 
-    //draw outer circle
+    //draw ellipse
+    ctx.save();
+    ctx.translate(this.x, this.y);
     ctx.fillStyle = "#f8f9fa";
     ctx.beginPath();
-    ctx.ellipse(this.x, this.y, this.rw, this.rh, 0, 0, Math.PI * 2);
+    let pos = this.pos[0];
+    ctx.moveTo(pos.x, pos.y);
+    for (let i = 1; i < this.total; i++) {
+      const pos = this.pos[i];
+      ctx.lineTo(pos.x, pos.y);
+    }
     ctx.fill();
+    ctx.restore();
 
     //move eye slightly to the pointer
     if (mousePos) {
@@ -119,11 +156,13 @@ export class Eye {
     ctx.restore();
   }
 
-  getCircle(radius, t) {
+  getEllipsePoint(a, b, t) {
     const theta = Math.PI * 2 * t;
     return {
-      x: Math.cos(theta) * radius,
-      y: Math.sin(theta) * radius,
+      x: a * Math.cos(theta),
+      y: b * Math.sin(theta),
     };
   }
+
+  update;
 }
