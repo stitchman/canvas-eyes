@@ -16,12 +16,8 @@ class App {
       this.stageHeight / 2 - 30
     );
     this.eyes = [initEye];
-    console.log(this.eyes);
 
-    window.addEventListener("click", (e) => {
-      const eye = new Eye(e.clientX, e.clientY);
-      this.eyes.push(eye);
-    });
+    window.addEventListener("click", this.onClick.bind(this), false);
 
     window.addEventListener("pointermove", this.onMove.bind(this), false);
 
@@ -45,6 +41,20 @@ class App {
     this.eyes.forEach((eye) => {
       eye.draw(this.ctx, this.mousePos);
     });
+  }
+
+  onClick(e) {
+    const newEye = new Eye(e.clientX, e.clientY);
+
+    for (let i = this.eyes.length - 1; i >= 0; i--) {
+      const eye = this.eyes[i];
+      const distance = Math.hypot(eye.x - newEye.x, eye.y - newEye.y);
+      if (distance < eye.radius + newEye.radius + 10) {
+        this.eyes.splice(i, 1);
+      }
+    }
+
+    this.eyes.push(newEye);
   }
 
   onMove(e) {
