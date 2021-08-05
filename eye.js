@@ -16,8 +16,8 @@ export class Eye {
 
     for (let i = 0; i < this.total; i++) {
       const pos = this.getEllipsePoint(this.radius, this.radius, this.gap * i);
-      pos.x += (Math.random() * this.radius) / 50;
-      pos.y += (Math.random() * this.radius) / 50;
+      pos.x += (Math.random() * this.radius) / 60;
+      pos.y += (Math.random() * this.radius) / 60;
       this.originPos[i] = pos;
     }
 
@@ -26,29 +26,12 @@ export class Eye {
       this.pos[i] = pos;
     }
 
-    this.blinkSpeed = 13;
+    this.blinkSpeed = 8;
     this.originBlinkSpeed = this.blinkSpeed;
 
     this.irisX = this.x;
     this.irisY = this.y;
-    this.irisRadius = this.radius / 6;
-
-    const irisColors = [
-      "#fd7e14",
-      "#ffd43b",
-      "#82c91e",
-      "#2f9e44",
-      "#099268",
-      "#22b8cf",
-      "#1971c2",
-      "#3b5bdb",
-      "#6741d9",
-      "#9c36b5",
-      "#c2255c",
-      "#e03131",
-      "#212529",
-    ];
-    this.irisColor = irisColors[Math.floor(Math.random() * irisColors.length)];
+    this.irisRadius = this.radius / 10;
 
     this.drawIris = {
       round: (ctx) => {
@@ -128,6 +111,7 @@ export class Eye {
       const pos = this.pos[i];
       ctx.lineTo(pos.x, pos.y);
     }
+    ctx.closePath();
     ctx.fill();
     ctx.restore();
 
@@ -144,15 +128,15 @@ export class Eye {
       this.irisY = (this.radius / 10) * Math.sin(this.angle) + this.y;
     }
 
-    //draw iris
-
+    //draw muscle, iris
     ctx.save();
     ctx.globalCompositeOperation = "source-atop";
-    ctx.fillStyle = this.irisColor;
+    ctx.fillStyle = "#212529";
     ctx.beginPath();
     this.drawIris[this.irisShape](ctx);
-    ctx.closePath();
     ctx.fill();
+
+    ctx.closePath();
     ctx.restore();
   }
 

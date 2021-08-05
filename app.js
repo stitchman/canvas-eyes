@@ -1,4 +1,5 @@
 import { Eye } from "./eye.js";
+import { Greedy } from "./greedy.js";
 
 class App {
   constructor() {
@@ -7,6 +8,8 @@ class App {
     this.ctx = this.canvas.getContext("2d");
 
     this.pixelRatio = window.devicePixelRatio > 1 ? 2 : 1;
+
+    this.greedy = new Greedy();
 
     window.addEventListener("resize", this.resize.bind(this), false);
     this.resize();
@@ -31,12 +34,16 @@ class App {
     this.canvas.width = this.stageWidth * this.pixelRatio;
     this.canvas.height = this.stageHeight * this.pixelRatio;
     this.ctx.scale(this.pixelRatio, this.pixelRatio);
+
+    this.greedy.resize(this.stageWidth, this.stageHeight);
   }
 
   animate(t) {
     window.requestAnimationFrame(this.animate.bind(this));
 
     this.ctx.clearRect(0, 0, this.stageWidth, this.stageHeight);
+
+    this.greedy.draw(this.ctx);
 
     this.eyes.forEach((eye) => {
       eye.draw(this.ctx, this.mousePos);
