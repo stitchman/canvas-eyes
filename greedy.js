@@ -2,10 +2,10 @@ import { Tooth } from "./tooth.js";
 
 export class Greedy {
   constructor() {
-    this.eatingSpeed = 40;
-    this.teethTotal = 20;
-    this.teethWidth = 50;
-    this.teethHeight = 50;
+    this.eatingSpeed = 50;
+    this.teethTotal = 30;
+    this.teethWidth = 30;
+    this.teethHeight = 60;
 
     this.originEatingSpeed = this.eatingSpeed;
   }
@@ -17,10 +17,11 @@ export class Greedy {
     this.x = this.stageWidth / 2;
     this.y = this.stageHeight / 2;
 
-    this.originMouthHeight = this.stageHeight * 1.8;
-    this.originMouthWidth = this.stageWidth;
-    this.mouthHeight = this.originMouthHeight;
-    this.mouthWidth = this.originMouthWidth;
+    this.mouthWidth = this.stageWidth / 2;
+    this.mouthHeight = this.stageHeight / 2;
+
+    this.originMouthWidth = this.mouthWidth;
+    this.originMouthHeight = this.mouthHeight;
   }
 
   init() {
@@ -77,7 +78,7 @@ export class Greedy {
   }
 
   eat() {
-    if (this.mouthHeight < 0) {
+    if (this.mouthHeight < 1 + this.eatingSpeed && this.eatingSpeed > 0) {
       this.eatingSpeed = 0;
       this.mouthHeight = 0;
     } else if (this.mouthHeight === 0) {
@@ -86,7 +87,6 @@ export class Greedy {
       }, 1000);
     } else if (this.mouthHeight > this.originMouthHeight) {
       this.eatingSpeed = 0;
-      this.mouthHeight = this.originMouthHeight;
     }
     this.mouthHeight -= this.eatingSpeed;
     this.init();
@@ -96,15 +96,22 @@ export class Greedy {
     this.eat();
 
     ctx.beginPath();
-    ctx.fillStyle = "#c92a2a";
+    ctx.fillStyle = "#9c36b5";
+    ctx.fillRect(0, 0, this.stageWidth, this.stageHeight);
+    ctx.closePath();
+
+    ctx.save();
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.beginPath();
     ctx.moveTo(this.x1, this.y1);
     ctx.quadraticCurveTo(this.cx1, this.cy1, this.x2, this.y2);
     ctx.quadraticCurveTo(this.cx2, this.cy2, this.x1, this.y1);
     ctx.fill();
     ctx.closePath();
+    ctx.restore();
 
     ctx.save();
-    ctx.globalCompositeOperation = "source-atop";
+    ctx.globalCompositeOperation = "destination-over";
     this.teeth.forEach((tooth) => {
       tooth.draw(ctx);
     });

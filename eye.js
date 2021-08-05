@@ -26,7 +26,7 @@ export class Eye {
       this.pos[i] = pos;
     }
 
-    this.blinkSpeed = 8;
+    this.blinkSpeed = 10;
     this.originBlinkSpeed = this.blinkSpeed;
 
     this.irisX = this.x;
